@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ljt.spring.dao.UserDao">
+
+	<select id="getById" resultType="user">
+		SELECT * FROM T_USER WHERE id = #{id}
+	</select>
+	
+	<select id="query" resultType="user">
+		SELECT * FROM T_USER
+	</select>
+	
+	<select id="queryUser" resultType="map">
+		<!-- SELECT name, password, 0 AS num FROM T_USER -->
+		
+		<!-- 这得参数@Param("id") 必须有，反之这不是必须的  -->
+		<!-- <where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+		</where> -->
+		
+		SELECT u.id, SUM(m.money) AS money
+		from T_USER AS u 
+			LEFT JOIN T_USER_MONEY AS m ON u.id = m.userId
+		WHERE u.id IN (10)
+		
+		
+		<!-- 正确的SQL
+		SELECT u.id, m.money 
+		FROM T_USER AS u LEFT JOIN 
+			(SELECT userId, SUM(money) AS money FROM T_USER_MONEY GROUP BY userId) AS m ON u.id = m.userId -->
+	</select>
+	
+</mapper>

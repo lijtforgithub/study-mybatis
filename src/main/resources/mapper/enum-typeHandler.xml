@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.apache.ibatis.submitted.rounding.Mapper">
+
+	<resultMap id="usermap" type="org.apache.ibatis.submitted.rounding.User">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="funkyNumber" property="funkyNumber" />
+		<result column="roundingMode" property="roundingMode" />
+	</resultMap>
+
+	<select id="getUser" resultMap="usermap">
+		SELECT * FROM users
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO users 
+	    	(id, name, funkyNumber, roundingMode)
+	    VALUES 
+	     	(#{id}, #{name}, #{funkyNumber}, #{roundingMode})
+	</insert>
+	
+	<resultMap id="usermap2" type="org.apache.ibatis.submitted.rounding.User">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="funkyNumber" property="funkyNumber" />
+		<!-- 自动映射器（auto-mapper）会自动地选用 EnumOrdinalTypeHandler 来处理， 所以如果我们想用普通的 EnumTypeHandler，就非要为那些 SQL 语句显式地设置要用到的类型处理器不可。  -->
+		<result column="roundingMode" property="roundingMode" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+	</resultMap>
+	
+	<select id="getUser2" resultMap="usermap2">
+		SELECT * FROM users2
+	</select>
+	
+	<insert id="insert2">
+	    INSERT INTO users2 
+	    	(id, name, funkyNumber, roundingMode)
+	    VALUES 
+	    	(#{id}, #{name}, #{funkyNumber}, #{roundingMode, typeHandler=org.apache.ibatis.type.EnumTypeHandler})
+	</insert>
+
+</mapper>

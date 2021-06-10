@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间（Namespaces）在之前版本的 MyBatis 中是可选的，容易引起混淆因此是没有益处的。
+	现在的命名空间则是必须的，目的是希望能比只是简单的使用更长的完全限定名来区分语句更进一步。
+	命名空间使得你所见到的接口绑定成为可能，尽管你觉得这些东西未必用得上，你还是应该遵循这里的规定以防哪天你改变了主意。
+	出于长远考虑，使用命名空间，并将它置于合适的 Java 包命名空间之下，你将拥有一份更加整洁的代码并提高了 MyBatis 的可用性。 -->
+<mapper namespace="com.ljt.dao.BlogMapper">
+
+	<sql id="t_blog">T_BLOG</sql>
+	
+	<!-- 设置useGeneratedKeys(数据库内部生成的主键)="true" keyProperty(设置它的键值)="id" 自增的主键才会返回到实体 -->
+	<!-- useGeneratedKeys（仅对 insert 和 update 有用）这会令 MyBatis 使用 JDBC 的 getGeneratedKeys 方法来取出由数据库内部生成的主键（比如：像 MySQL 和 SQL Server 这样的关系数据库管理系统的自动递增字段），默认值：false。 -->
+	<!-- keyProperty（仅对 insert 和 update 有用）唯一标记一个属性，MyBatis 会通过 getGeneratedKeys 的返回值或者通过 insert 语句的 selectKey 子元素设置它的键值，默认：unset。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。  -->
+	<!-- keyColumn（仅对 insert 和 update 有用）通过生成的键值设置表中的列名，这个设置仅在某些数据库（像 PostgreSQL）是必须的，当主键列不是表中的第一列的时候需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。 -->
+	<!-- 如果数据库支持自动生成主键的字段（比如 MySQL 和 SQL Server），那么你可以设置 useGeneratedKeys=”true”，然后再把 keyProperty 设置到目标属性上就OK了 -->
+	<insert id="insert" parameterType="blog"> <!-- useGeneratedKeys="true" keyProperty="id" -->
+		INSERT INTO <include refid="t_blog" />
+			(title)
+		VALUES
+			(#{title})
+		
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+        	SELECT LAST_INSERT_ID() AS ID   
+      	</selectKey>
+	</insert>
+	
+	<!-- 对于不支持自动生成类型的数据库或可能不支持自动生成主键 JDBC 驱动来说，MyBatis 有另外一种方法来生成主键。  -->
+	<!-- 这可以被设置为 BEFORE 或 AFTER。如果设置为 BEFORE，那么它会首先选择主键，设置 keyProperty 然后执行插入语句。
+		如果设置为 AFTER，那么先执行插入语句，然后是 selectKey 元素 - 这和像 Oracle 的数据库相似，在插入语句内部可能有嵌入索引调用。  -->
+	<!-- <insert id="">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+    		SELECT CAST(RANDOM()*1000000 AS INTEGER) a FROM SYSIBM.SYSDUMMY1
+  		</selectKey>
+	</insert> -->
+	
+	<!-- #{id}这就告诉 MyBatis 创建一个预处理语句参数，通过 JDBC，这样的一个参数在 SQL 中会由一个?来标识，并被传递到一个新的预处理语句中 -->
+	<!-- <select id="getById" parameterType="int" resultType="blog">
+		 SELECT * FROM <include refid="t_blog" />
+		 WHERE id = #{id}
+	</select> -->
+	
+	<!-- id 在命名空间中唯一的标识符，可以被用来引用这条语句。 -->
+	<!-- parameterType 将会传入这条语句的参数类的完全限定名或别名。这个属性是可选的，因为 MyBatis 可以通过 TypeHandler 推断出具体传入语句的参数，默认值为 unset。 -->
+	<!-- resultType 从这条语句中返回的期望类型的类的完全限定名或别名。注意如果是集合情形，那应该是集合可以包含的类型，而不能是集合本身。使用 resultType 或 resultMap，但不能同时使用。 -->
+	<!-- resultMap 外部 resultMap 的命名引用。结果集的映射是 MyBatis 最强大的特性，对其有一个很好的理解的话，许多复杂映射的情形都能迎刃而解。使用 resultMap 或 resultType，但不能同时使用。 -->
+	<!-- flushCache 将其设置为 true，任何时候只要语句被调用，都会导致本地缓存和二级缓存都会被清空，默认值：false。  -->
+	<!-- useCache 将其设置为 true，将会导致本条语句的结果被二级缓存，默认值：对 select 元素为 true。  -->
+	<!-- timeout 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。   -->
+	<!-- fetchSize 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等。默认值为 unset（依赖驱动）。   -->
+	<!-- statementType STATEMENT，PREPARED 或 CALLABLE 的一个。这会让 MyBatis 分别使用 Statement，PreparedStatement 或 CallableStatement，默认值：PREPARED。  -->
+	<!-- resultSetType FORWARD_ONLY，SCROLL_SENSITIVE 或 SCROLL_INSENSITIVE 中的一个，默认值为 unset （依赖驱动）。  -->
+	<!-- databaseId 如果配置了 databaseIdProvider，MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。  -->
+	<!-- resultOrdered 这个设置仅针对嵌套结果 select 语句适用：如果为 true，就是假设包含了嵌套结果集或是分组了，这样的话当返回一个主结果行的时候，就不会发生有对前面结果集的引用的情况。这就使得在获取嵌套的结果集的时候不至于导致内存不够用。默认值：false。  -->
+	<!-- resultSets 这个设置仅对多结果集的情况适用，它将列出语句执行后返回的结果集并每个结果集给一个名称，名称是逗号分隔的。  -->
+	<select id="query" resultType="blog">
+		 SELECT * FROM <include refid="t_blog" />
+	</select>
+	<!-- 如果同时找到带有 databaseId 和不带 databaseId 的相同语句，则后者会被舍弃 -->
+	<select id="query" resultType="blog" databaseId="mysql">
+		 SELECT 
+		 <include refid="field">
+		 	<!-- 从3.3.0版本开始才可以设置 property-->
+		 	<property name="alias" value="t" />
+		 	<property name="table" value="t_blog" />
+		 </include> 
+		 
+		 LIMIT 0, 2
+	</select>
+	
+	<!-- 这个元素可以被用来定义可重用的 SQL 代码段，可以包含在其他语句中。它可以被静态地(在加载参数) 参数化. 不同的属性值通过包含的实例变化
+		属性值可以用于包含的refid属性或者包含的字句里面的属性值 -->
+	<sql id="field">${alias}.id, ${alias}.title FROM <include refid="${table}" /> AS t </sql>
+	
+</mapper>

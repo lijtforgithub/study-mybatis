@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ljt.dao.UserMapper">
+	
+	<sql id="t_user">T_USER</sql>
+	
+	<!-- 参数也可以指定一个特殊的数据类型。#{property, javaType=int, jdbcType=NUMERIC} 
+		javaType通常可以从参数对象中来去确定，前提是只要对象不是一个 HashMap。那么 javaType 应该被确定来保证使用正确类型处理器。
+		如果 null 被当作值来传递，对于所有可能为空的列，JDBC Type 是需要的。你可以自己通过阅读预处理语句的 setNull() 方法的 JavaDocs 文档来研究这种情况。-->
+	<!-- 也可以指定一个特殊的类型处理器类（或别名）。#{age, javaType=int, jdbcType=NUMERIC, typeHandler=MyTypeHandler} -->
+	<!-- 对于数值类型，还有一个小数保留位数的设置，来确定小数点后保留的位数。#{height, javaType=double, jdbcType=NUMERIC, numericScale=2} -->
+	<insert id="insert" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+	  	INSERT INTO <include refid="t_user" /> 
+	  		(name, password)
+	  	VALUES 
+	  		(#{name, javaType=string, jdbcType=VARCHAR}, #{password})
+	</insert>
+	<!-- 最后，mode 属性允许你指定 IN，OUT 或 INOUT 参数。如果参数为 OUT 或 INOUT，参数对象属性的真实值将会被改变，就像你在获取输出参数时所期望的那样。
+		如果 mode 为 OUT（或 INOUT），而且 jdbcType 为 CURSOR(也就是 Oracle 的 REFCURSOR)，你必须指定一个 resultMap 来映射结果集到参数类型。
+		要注意这里的 javaType 属性是可选的，如果左边的空白是 jdbcType 的 CURSOR 类型，它会自动地被设置为结果集。 
+		#{department, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=departmentResultMap} -->
+	<!-- MyBatis 也支持很多高级的数据类型，比如结构体，但是当注册 out 参数时你必须告诉它语句类型名称。比如（再次提示，在实际中要像这样不能换行）： 
+		#{middleInitial, mode=OUT, jdbcType=STRUCT, jdbcTypeName=MY_TYPE, resultMap=departmentResultMap}
+		尽管所有这些强大的选项很多时候你只简单指定属性名，其他的事情 MyBatis 会自己去推断，最多你需要为可能为空的列名指定 jdbcType。 -->
+	
+	<!-- 这个示例说明了一个非常简单的命名参数映射。参数类型被设置为 int，这样这个参数就可以被设置成任何内容。
+		原生的类型或简单数据类型（比如整型和字符串）因为没有相关属性，它会完全用参数值来替代。然而，如果传入一个复杂的对象(insert)，行为就会有一点不同了。 -->
+	<select id="getById" resultType="user">
+		SELECT * FROM <include refid="t_user" />
+	  	WHERE id = #{id}
+	</select>
+	
+	<!-- MyBatis 会在幕后自动创建一个 ResultMap,基于属性名来映射列到 JavaBean 的属性上。
+		如果列名没有精确匹配,你可以在列名上使用 select 字句的别名(AS)(一个 基本的 SQL 特性)来匹配标签。 -->
+	<select id="query" resultType="user">
+		SELECT * FROM <include refid="t_user" />
+	</select>
+
+</mapper>

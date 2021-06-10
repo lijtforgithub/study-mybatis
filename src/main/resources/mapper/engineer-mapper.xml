@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ljt.dao.EngineerMapper">
+
+	<!-- EnumTypeHandler存储的是name EnumOrdinalTypeHandler存储的是ordinal -->
+	<insert id="insert" parameterType="engineer">
+		INSERT INTO T_ENGINEER(userId, grade) VALUES (#{id}, #{grade, typeHandler=org.apache.ibatis.type.EnumTypeHandler})
+	</insert>
+	
+	<resultMap id="engineerMap" type="engineer">
+		<id column="id" property="id" />
+		<result column="grade" property="grade" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+	</resultMap>
+	
+	<select id="getById" resultMap="engineerMap">
+		SELECT * FROM T_ENGINEER AS e INNER JOIN T_USER AS u ON e.userId = u.id WHERE u.id = #{id}
+	</select>
+
+</mapper>

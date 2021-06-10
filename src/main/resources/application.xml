@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+        
+    <context:component-scan base-package="com.ljt.study.spring, com.ljt.study.page" annotation-config="false" />
+    
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="locations" value="classpath:db.properties" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+	    <property name="driverClassName" value="${jdbc.driverClassName}" />
+	    <property name="url" value="${jdbc.url}" />
+	    <property name="username" value="${jdbc.username}" />
+	    <property name="password" value="${jdbc.password}" />
+	</bean>
+        
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<!-- 这个配置文件不需要是一个完整的 MyBatis 配置。确切地说,任意环境,数据源 和 MyBatis 的事务管理器都会被忽略。
+    		SqlSessionFactoryBean 会创建它自己的,使用这些 值定制 MyBatis 的 Environment 时是需要的。  -->
+    	<!-- <property name="configLocation" value="classpath:mybatis-config.xml" /> -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:mapper/spring/**/*-mapper.xml" />
+		<!-- 配置别名 -->
+		<property name="typeAliasesPackage" value="com.ljt.entity" />
+		<!-- 配置Mybatis插件 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<value>
+							dialect = mysql
+							offsetAsPageNum = false
+							rowBoundsWithCount = false
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 指定的 DataSource 一般可以是你使用 Spring 的任意 JDBC DataSource。这包含了连接 池和通过 JNDI 查找获得的 DataSource。 
+			注意, 为事务管理器指定的 DataSource 必须和用来创建 SqlSessionFactoryBean 的 是同一个数据源,否则事务管理器就无法工作了。  -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 如果你正使用一个 JEE 容器而且想让 Spring 参与到容器管理事务(Container managed transactions,CMT,译者注)中,
+	那么 Spring 应该使用 JtaTransactionManager 或它的容 器指定的子类来配置。<tx:jta-transaction-manager /> -->
+	
+	<tx:annotation-driven />
+	
+	<!-- 解决Manual close is not allowed over a Spring managed SqlSession问题scope="prototype" -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype"> 
+	  	<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- MapperScannerConfigurer 属性不支持使用了 PropertyPlaceholderConfigurer 的属 性替换,因为会在 Spring 其中之前来它加载。
+		但是,你可以使用 PropertiesFactoryBean 和 SpEL 表达式来作为替代。  -->
+	<!-- 没 有 必 要 去 指 定 SqlSessionFactory 或 SqlSessionTemplate , 因 为 MapperScannerConfigurer 将会创建 MapperFactoryBean,之后自动装配。
+		但是,如果你使 用了一个 以上的 DataSource ,那 么自动 装配可 能会失效 。这种 情况下 ,你可 以使用 sqlSessionFactoryBeanName 或 sqlSessionTemplateBeanName 属性来设置正确的 bean 名 称来使用。
+		这就是它如何来配置的,注意 bean 的名称是必须的,而不是 bean 的引用,因 此,value 属性在这里替代通常的 ref -->
+	<!-- MapperScannerConfigurer 支 持 过 滤 由 指 定 的 创 建 接 口 或 注 解 创 建 映 射 器 。 annotationClass 属性指定了要寻找的注解名称。 
+		markerInterface 属性指定了要寻找的父 接口。如果两者都被指定了,加入到接口中的映射器会匹配两种标准。
+		默认情况下,这两个 属性都是 null,所以在基包中给定的所有接口可以作为映射器加载。  -->
+	<!-- 被发现的映射器将会使用 Spring 对自动侦测组件(参考 Spring 手册的 3.14.4)默认的命 名策略来命名。
+		也就是说,如果没有发现注解,它就会使用映射器的非大写的非完全限定类 名。但是如果发现了@Component 或 JSR-330 的@Named 注解,它会获取名称。
+		注意你可以 配 置 到 org.springframework.stereotype.Component , javax.inject.Named(如果你使用 JSE 6 的话)或你自己的注解(肯定是自我注解)中,这 样注解将会用作生成器和名称提供器。  -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  	<property name="basePackage" value="com.ljt.spring.dao" /> <!-- 必须的 -->
+	  	<property name="annotationClass" value="org.springframework.stereotype.Repository" />
+	  	<!-- <property name="markerInterface" value="com.ljt.spring.dao.UserDao" /> -->
+	</bean>
+	
+	
+	<!-- MapperFactoryBean 处理 SqlSession 的创建和关闭它。
+	如果使用 了 Spring 的事务,那么当事务完成时,session 将会提交或回滚。最终,任何异常都会被翻 译成 Spring 的 DataAccessException 异常。 -->
+	<!-- MapperFactoryBean 创建的代理类实现了 UserMapper 接口,并且注入到应用程序中。
+		 因为代理创建在运行时环境中(Runtime,译者注) ,那么指定的映射器必须是一个接口,而 不是一个具体的实现类。  -->
+	<bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<!-- 要注意,所指定的映射器类必须是一个接口,而不是具体的实现类。 -->
+	  	<property name="mapperInterface" value="com.ljt.spring.dao.UserDao" />
+	  	<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- SqlSessionTemplate 实现了 SqlSession 接口,这个类负责管理 MyBatis 的 SqlSession, 调用 MyBatis 的 SQL 方法, 翻译异常。 
+		SqlSessionTemplate 是线程安全的, 可以被多个 DAO 所共享使用。  -->
+	<bean id="blogDao" class="com.ljt.spring.dao.impl.BlogDaoImpl">
+		<property name="sqlSession" ref="sqlSession" />
+	</bean>
+	
+	<!-- SqlSessionDaoSupport 需要一个 sqlSessionFactory 或 sqlSessionTemplate 属性来 设 置 。 
+		这 些 被 明 确 地 设 置 或 由 Spring 来 自 动 装 配 。 如 果 两 者 都 被 设 置 了 , 那 么 SqlSessionFactory 是被忽略的。 -->
+	<bean id="authorDao" class="com.ljt.spring.dao.impl.AuthorDaoImpl">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 通常 MapperFactoryBean 是实例化Dao的首选,因为它不需要额外的代码。但是,如果你 需要在 DAO 中做其它非 MyBatis 的工作或需要具体的类,那么这个类就很有用了。 -->
+	
+</beans>

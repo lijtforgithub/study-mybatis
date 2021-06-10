@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ljt.dao.SeniorMapper">
+
+	<!-- type 完全限定的Java类名，或一个类型别名（参加上面的列表中内置型的别名）。
+		autoMapping 如果设置，MyBatis会启用或禁用自动映射这个结果映射。此属性将覆盖config中的全局配置参数 autoMappingBehavior。默认值：未设置。 -->
+	<resultMap id="blogMap" type="blog">
+	
+		<!-- 对于大多数数据传输对象(Data Transfer Object,DTO)类型,属性可以起作用,而且像 你绝大多数的领域模型, 指令也许是你想使用一成不变的类的地方。 
+			通常包含引用或查询数 据的表很少或基本不变的话对一成不变的类来说是合适的。 构造方法注入允许你在初始化时 为类设置属性的值,而不用暴露出公有方法。
+			MyBatis 也支持私有属性和私有 JavaBeans 属 性来达到这个目的,但是一些人更青睐构造方法注入。构造方法元素支持这个。  -->
+		<!-- 为了向这个构造方法中注入结果,MyBatis 需要通过它的参数的类型来标识构造方法。 Java 没有自查(反射)参数名的方法。
+			所以当创建一个构造方法元素时,保证参数是按顺序 排列的,而且数据类型也是确定的。  -->
+		<constructor> <!-- 类在实例化时,用来注入结果到构造方法中(必须有与之对应的构造方法)  -->
+			<!-- <idArg column="blog_id" javaType="int" /> --> <!-- ID 参数;标记结果作为 ID 可以帮助提高整体效能 -->
+			<!-- <arg column="blog_title" javaType="string" jdbcType="VARCHAR" /> --><!-- 注入到构造方法的一个普通结果 -->
+			<!-- select 别人的ID映射语句，加载这个属性映射需要的复杂类型。从列属性中指定列的值将被传递给目标select语句作为参数。 -->
+			<!-- resultMap 这是结果，可这种说法的嵌套结果映射到一个合适的对象图的ID。这是一种替代方法来调用另外一个查询语句。它可以让你加入多个表组合成一个单独的结果。
+				这样的结果可能包含重复，重复，需要被分解，合理映射到一个嵌套的对象图数据组。为推动这项工作中，MyBatis让你链接结果映射，来处理嵌套结果。 -->
+		</constructor>
+		
+		<!-- id 和 result 都映射一个单独列的值到简单数据类型(字符 串,整型,双精度浮点数,日期等)的单独属性或字段。 
+			这两者之间的唯一不同是 id 表示的结果将是当比较对象实例时用到的标识属性。这帮 助来改进整体表现,特别是缓存和嵌入结果映射(也就是联合映射) 。 -->
+		<!-- property 映射到列结果的字段或属性。如果匹配的是存在的,和给定名称相同 的 JavaBeans 的属性,那么就会使用。否则 MyBatis 将会寻找给定名称 property 的字段。
+			这两种情形你可以使用通常点式的复杂属性导航。比如,你 可以这样映射一些东西: “username” ,或者映射到一些复杂的东西: “address.street.number” -->
+		<!-- javaType 一个 Java 类的完全限定名,或一个类型别名(参考上面内建类型别名 的列表) 。如果你映射到一个 JavaBean,MyBatis 通常可以断定类型。 
+			然而,如果你映射到的是 HashMap,那么你应该明确地指定 javaType 来保证所需的行为。  -->
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" /> <!-- 注入到字段或 JavaBean 属性的普通结果 -->
+		
+		<!-- 关联中不同的是你需要告诉 MyBatis 如何加载关联。MyBatis 在这方面会有两种不同的 方式: 
+			嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。 嵌套结果:使用嵌套结果映射来处理重复的联合结果的子集。  -->
+		<!-- column 来自数据库的列名,或重命名的列标签。这和通常传递给 resultSet.getString(columnName)方法的字符串是相同的。
+			注 意 : 要 处 理 复 合 主 键 , 你 可 以 指 定 多 个 列 名 通 过 column= ” {prop1=col1,prop2=col2} ” 这种语法来传递给嵌套查询语 句。这会引起 prop1 和 prop2 以参数对象形式来设置给目标嵌套查询语句。   -->
+			
+		<!-- fetchType可选。有效值是lazy和eager。如果设置，它覆盖config中的全局配置参数lazyLoadingEnabled -->
+		<association property="author" javaType="author"> <!-- 一个复杂的类型关联;许多结果将包成这种类型(一对一) ◦嵌入结果映射 – 结果映射自身的关联,或者参考一个  -->
+			<id property="id" column="author_id" /> <!-- 一个 ID 结果;标记结果作为 ID 可以帮助提高整体效能 -->
+			<result property="username" column="author_username" />
+			<result property="password" column="author_password" />
+			<result property="email" column="author_email" />
+			<result property="bio" column="author_bio" />
+			<result property="favouriteSection" column="author_favourite_section" />
+		</association>
+		
+		<collection property="posts" ofType="post"> <!-- 复杂类型的集 (一对多)◦嵌入结果映射 – 结果映射自身的集,或者参考一个 -->
+			<id property="id" column="post_id" />
+			<result property="createdOn" column="post_created_on" />
+			<result property="section" column="post_section" />
+			<result property="subject" column="post_subject" />
+			<result property="body" column="post_body" />
+			
+			<collection property="comments" ofType="comment">
+				<id property="id" column="comment_id" />
+				<result property="name" column="comment_name" />
+				<result property="text" column="comment_text" />
+			</collection>
+			
+			<collection property="tags" ofType="tag">
+				<id property="id" column="tag_id" />
+				<result property="name" column="tag_name" />
+			</collection>
+			
+			<discriminator javaType="int" column="draft"> <!-- 使用结果值来决定使用哪个结果映射 像 Java 语言中的 switch 语句 -->
+				<case value="1" resultType="draftPost" /> <!-- 基于某些值的结果映射  -->
+				<!-- 嵌入结果映射 – 这种情形结果也映射它本身,因此可以包含很多相 同的元素,或者它可以参照一个外部的结果映射。 -->
+			</discriminator>
+		</collection>
+	</resultMap>
+
+	<select id="queryBlog" resultMap="blogMap">
+		SELECT
+			b.id AS blog_id,
+			b.title AS blog_title,
+			b.authorId AS blog_author_id,
+			
+			a.id AS author_id,
+			a.username AS author_username,
+			a.password AS author_password,
+			a.email AS author_email,
+			a.bio AS author_bio,
+			a.favouriteSection AS author_favourite_section,
+			
+			p.id AS post_id,
+			p.createdOn AS post_created_on,
+			p.section AS post_section,
+			p.subject AS post_subject,
+			p.draft AS draft,
+			p.body AS post_body,
+			p.blogId AS post_blog_id,
+			
+			c.id AS comment_id,
+			c.postId AS comment_post_id,
+			c.name AS comment_name,
+			c.text AS comment_text,
+			
+			t.id AS tag_id,
+			t.name AS tag_name
+		FROM T_BLOG b
+			LEFT OUTER JOIN T_AUTHOR AS a ON b.authorId = a.id
+			LEFT OUTER JOIN T_POST AS p ON b.id = p.blogId
+			LEFT OUTER JOIN T_COMMENT AS c ON p.id = c.postId
+			LEFT OUTER JOIN T_RL_POST_TAG AS pt ON pt.postId = p.id
+			LEFT OUTER JOIN T_TAG AS t ON pt.tagId = t.id
+	</select>
+	
+	
+	<!-- 我们有两个查询语句:一个来加载博客,另外一个来加载作者,而且博客的结果映射描 述了selectAuthor语句应该被用来加载它的 author 属性。 
+		其他所有的属性将会被自动加载,假设它们的列和属性名相匹配。 -->
+	<!-- 这种方式很简单, 但是对于大型数据集合和列表将不会表现很好。 问题就是我们熟知的 N+1 查询问题。概括地讲,N+1 查询问题可以是这样引起的: 
+		你执行了一个单独的 SQL 语句来获取结果列表(就是+1)。对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是N)。 
+		这个问题会导致成百上千的 SQL 语句被执行。这通常不是期望的。 MyBatis 能延迟加载这样的查询就是一个好处,因此你可以分散这些语句同时运行的消 耗。
+		然而,如果你加载一个列表,之后迅速迭代来访问嵌套的数据,你会调用所有的延迟加 载,这样的行为可能是很糟糕的。 -->
+	<resultMap id="blogMap1" type="blog">
+		<!-- columnPrefix 当连接多个表，你将不得不使用列别名，以避免在ResultSet中重复列名。指定columnPrefix允许你这样的列映射到外部的结果 -->
+  		<association property="author" column="authorId" javaType="author" select="selectAuthor" /><!-- fetchType="lazy" -->
+	</resultMap>
+	<!-- 嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。发了两条SQL -->
+	<select id="queryNestedQuery" resultMap="blogMap1">
+  		SELECT * FROM T_BLOG
+	</select>
+	<select id="selectAuthor" resultType="author">
+  		SELECT * FROM T_AUTHOR WHERE id = #{id}
+	</select>
+	
+	
+	
+	<!-- 在嵌套结果映射中 id 元素扮演了非常重要的角色。应应该通常指定一个 或多个属性,它们可以用来唯一标识结果。
+		实际上就是如果你离开她了,但是有一个严重的 性能问题时 MyBatis 仍然可以工作。
+		选择的属性越少越好,它们可以唯一地标识结果。主键 就是一个显而易见的选择(尽管是联合主键)。 -->
+	<resultMap id="blogMap2" type="blog">
+  		<id property="id" column="blog_id" />
+  		<result property="title" column="blog_title" />
+  		
+  		<association property="author" column="blog_author_id" javaType="Author" resultMap="authorMap" />
+	</resultMap>
+	<resultMap id="authorMap" type="author">
+	  	<id property="id" column="author_id" />
+	  	<result property="username" column="author_username" />
+	  	<result property="password" column="author_password" />
+	  	<result property="email" column="author_email" />
+	  	<result property="bio" column="author_bio" />
+	  	<result property="favouriteSection" column="author_favourite_section" />
+	</resultMap>
+	<!-- 嵌套结果:使用嵌套结果映射来处理重复的联合结果的子集。比嵌套查询效率好 -->
+	<select id="queryNestedResult" resultMap="blogMap2">
+		SELECT
+			b.id AS blog_id,
+			b.title AS blog_title,
+			b.authorId AS blog_author_id,
+			a.id AS author_id,
+			a.username AS author_username,
+			a.password AS author_password,
+			a.email AS author_email,
+			a.bio AS author_bio,
+			a.favouriteSection AS author_favourite_section
+		FROM T_Blog AS b
+			LEFT OUTER JOIN T_Author AS a on b.authorId = a.id
+	</select>
+	
+	<!-- 等同于blogMap2 -->
+	<resultMap id="blogResult" type="blog">
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" />
+	
+		<association property="author" javaType="author">
+			<id property="id" column="author_id" />
+			<result property="username" column="author_username" />
+			<result property="password" column="author_password" />
+			<result property="email" column="author_email" />
+			<result property="bio" column="author_bio" />
+			<result property="favouriteSection" column="author_favourite_section" />
+		</association>
+	</resultMap>
+	
+	<select id="selectBlog" resultMap="blogCoResult">
+		SELECT
+			b.id AS blog_id,
+			b.title AS blog_title,
+			
+			a.id AS author_id,
+			a.username AS author_username,
+			a.password AS author_password,
+			a.email AS author_email,
+			a.bio AS author_bio,
+			a.favouriteSection AS author_favourite_section,
+			
+			ca.id AS co_author_id,
+			ca.username AS co_author_username,
+			ca.password AS co_author_password,
+			ca.email AS co_author_email,
+			ca.bio AS co_author_bio,
+			ca.favouriteSection AS co_author_favourite_section
+		FROM T_Blog AS b
+			LEFT OUTER JOIN T_Author AS a ON b.authorId = a.id
+			LEFT OUTER JOIN T_Author AS ca ON b.co_authorId = a.id
+	</select>
+
+	<resultMap id="authorResult" type="author">
+		<id property="id" column="author_id" />
+		<result property="username" column="author_username" />
+		<result property="password" column="author_password" />
+		<result property="email" column="author_email" />
+		<result property="bio" column="author_bio" />
+		<result property="favouriteSection" column="author_favourite_section" />
+	</resultMap>
+
+	<resultMap id="blogCoResult" type="blog">
+		<id property="id" column="blog_id" />
+		<result property="title" column="blog_title" />
+		
+		<association property="author" resultMap="authorResult" />
+		<association property="coAuthor" resultMap="authorResult" columnPrefix="co_" />
+	</resultMap>
+
+	<resultMap id="vehicleMap" type="vehicle" autoMapping="true">
+		<id property="id" column="id" />
+		<!-- <result property="vin" column="vin" />
+		<result property="year" column="year" />
+		<result property="make" column="make" />
+		<result property="model" column="model" />
+		<result property="color" column="color" /> -->
+		
+		<!-- 在这个示例中, MyBatis 会从结果集中得到每条记录, 然后比较它的 vehicle 类型的值。 如果它匹配任何一个鉴别器的实例,那么就使用这个实例指定的结果映射。
+			如果没有任何 一个实例相匹配,那么 MyBatis 仅仅使用鉴别器块外定义的结果映射。 -->
+		<discriminator javaType="int" column="type">
+			<case value="1" resultMap="carMap" />
+			<case value="2" resultMap="truckResult" />
+			<case value="3" resultType="suv" />
+		</discriminator>
+	</resultMap>
+	
+	<resultMap id="carMap" type="car" extends="vehicleMap">
+	  	<result property="doorCount" column="doorCount" />
+	</resultMap>
+	
+	<select id="getVehicleById" resultMap="vehicleMap">
+		SELECT * FROM T_VEHICLE WHERE id = #{id}
+	</select>
+	
+	<select id="getCarById" resultMap="carMap">
+		SELECT * FROM T_CAR AS c INNER JOIN T_VEHICLE AS v ON c.vehicleId = v.id WHERE v.id = #{id}
+	</select>
+	
+	<!-- <resultMap id="vehicleResult" type="vehicle">
+		<id property="id" column="id" />
+		<result property="vin" column="vin" />
+		<result property="year" column="year" />
+		<result property="make" column="make" />
+		<result property="model" column="model" />
+		<result property="color" column="color" />
+		
+		<discriminator javaType="int" column="type">
+			<case value="1" resultType="carResult">
+				<result property="doorCount" column="door_count" />
+			</case>
+			<case value="2" resultType="truckResult">
+				<result property="boxSize" column="box_size" />
+				<result property="extendedCab" column="extended_cab" />
+			</case>
+			<case value="3" resultType="vanResult">
+				<result property="powerSlidingDoor" column="power_sliding_door" />
+			</case>
+			<case value="4" resultType="suvResult">
+				<result property="allWheelDrive" column="all_wheel_drive" />
+			</case>
+		</discriminator>
+	</resultMap> -->
+	
+	<!-- 默认情况下是没有开启缓存的,除了局部的 session 缓存,可以增强变现而且处理循环 依赖也是必须的。要开启二级缓存,你需要在你的 SQL 映射文件中添加一行
+		•映射语句文件中的所有 select 语句将会被缓存。
+		•映射语句文件中的所有 insert,update 和 delete 语句会刷新缓存。
+		•缓存会使用 Least Recently Used(LRU,最近最少使用的)算法来收回。
+		•根据时间表(比如 no Flush Interval,没有刷新间隔), 缓存不会以任何时间顺序 来刷新。
+		•缓存会存储列表集合或对象(无论查询方法返回什么)的 1024 个引用。
+		• 缓存会被视为是 read/write(可读/可写)的缓存,意味着对象检索不是共享的,而 且可以安全地被调用者修改,而不干扰其他调用者或线程所做的潜在修改。 -->
+	<!-- 可用的收回策略有: 默认的是 LRU。
+		• LRU – 最近最少使用的:移除最长时间不被使用的对象。 
+		•FIFO – 先进先出:按对象进入缓存的顺序来移除它们。 
+		• SOFT – 软引用:移除基于垃圾回收器状态和软引用规则的对象。 
+		• WEAK – 弱引用:更积极地移除基于垃圾收集器状态和弱引用规则的对象。 
+		flushInterval(刷新间隔)可以被设置为任意的正整数,而且它们代表一个合理的毫秒 形式的时间段。默认情况是不设置,也就是没有刷新间隔,缓存仅仅调用语句时刷新。 
+		size(引用数目)可以被设置为任意正整数,要记住你缓存的对象数目和你运行环境的 可用内存资源数目。默认值是 1024。 
+		readOnly(只读)属性可以被设置为 true 或 false。只读的缓存会给所有调用者返回缓 存对象的相同实例。因此这些对象不能被修改。
+		这提供了很重要的性能优势。可读写的缓存 会返回缓存对象的拷贝(通过序列化) 。这会慢一些,但是安全,因此默认是 false。
+		type 使用自定义缓存实现 org.mybatis.cache.Cache 接口 -->
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+	<!-- 参照缓存 <cache-ref namespace="com.someone.application.data.SomeMapper"/> -->
+
+	
+	<!-- insert -->
+	<insert id="insertBlog" parameterType="blog" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_BLOG(title, authorId) VALUES (#{title}, #{author.id})
+	</insert>
+	
+	<insert id="insertAuthor" parameterType="author" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_AUTHOR(username, password, email, bio, favouriteSection) VALUES (#{username}, #{password}, #{email}, #{bio}, #{favouriteSection})
+	</insert>
+	
+	<insert id="insertPost" parameterType="post" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_POST(createdOn, section, subject, draft, body, blogId) 
+		VALUES (#{createdOn}, #{section}, #{subject}, #{draft}, #{body}, #{blog.id})
+	</insert>
+	
+	<insert id="insertComment" parameterType="comment" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_COMMENT(name, text, postId) VALUES (#{name}, #{text}, #{post.id})
+	</insert>
+	
+	<insert id="insertTag" parameterType="tag" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_TAG(name) VALUES (#{name})
+	</insert>
+	
+	<insert id="insertPostTag" parameterType="map">
+		INSERT INTO T_RL_POST_TAG(postId, tagId) 
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.postId}, #{item.tagId})
+		</foreach>
+	</insert>
+	
+	<insert id="insertVehicle" parameterType="vehicle" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_VEHICLE(vin, year, make, model, color, type) 
+		VALUES (#{vin}, #{year}, #{make}, #{model}, #{color}, #{type})
+	</insert>
+	
+	<insert id="insertCar" parameterType="car">
+		INSERT INTO T_CAR(vehicleId, doorCount) VALUES (#{id}, #{doorCount})
+	</insert>
+
+</mapper>

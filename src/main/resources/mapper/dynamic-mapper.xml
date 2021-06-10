@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ljt.dao.DynamicMapper">
+
+	<!-- <select id="findActiveBlogWithTitleLike" resultType="blog">
+		SELECT * FROM BLOG
+		WHERE state = 'ACTIVE'
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+	</select>
+	
+	<select id="findActiveBlogLike" resultType="blog">
+		SELECT * FROM BLOG 
+		WHERE state = 'ACTIVE'
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+		<if test="author != null and author.name != null">
+			AND author_name like #{author.name}
+		</if>
+	</select>
+	
+	<select id="findActiveBlogLike" resultType="blog">
+		SELECT * FROM BLOG 
+		WHERE state = 'ACTIVE'
+		<choose>
+			<when test="title != null">
+				AND title like #{title}
+			</when>
+			<when test="author != null and author.name != null">
+				AND author_name like #{author.name}
+			</when>
+			<otherwise>
+				AND featured = 1
+			</otherwise>
+		</choose>
+	</select> -->
+
+	<!-- where 元素知道只有在一个以上的if条件有值的情况下才去插入WHERE子句。而且，若最后的内容是AND或OR开头的，where 元素也知道如何将他们去除。 -->
+	<!-- <select id="findActiveBlogLike" resultType="blog">
+		SELECT * FROM BLOG
+		<where>
+			<if test="state != null">
+				state = #{state}
+			</if>
+			<if test="title != null">
+				AND title like #{title}
+			</if>
+			<if test="author != null and author.name != null">
+				AND author_name like #{author.name}
+			</if>
+		</where>
+	</select> -->
+	
+	<select id="getBlogById" resultType="blog">
+		SELECT * FROM T_BLOG WHERE id = #{id}
+		
+	</select>
+	
+	<select id="queryBlogByTitle" resultType="blog">
+		SELECT * FROM T_BLOG
+		<!-- prefixOverrides 属性会忽略通过管道分隔的文本序列（注意此例中的空格也是必要的）。
+			它带来的结果就是所有在 prefixOverrides 属性中指定的内容将被移除，并且插入 prefix 属性中指定的内容。 -->
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="title != null"> <!-- 只传入一个String时接口参数@Param("title") -->
+				AND title LIKE #{title}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- set 元素会动态前置 SET 关键字，同时也会消除无关的逗号，因为用了条件语句之后很可能就会在生成的赋值语句的后面留下这些逗号。 -->
+	<!-- <update id="updateAuthorIfNecessary">
+		UPDATE Author
+		<set>
+			<if test="username != null">username=#{username},</if>
+			<if test="password != null">password=#{password},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="bio != null">bio=#{bio}</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+	
+	<trim prefix="SET" suffixOverrides=",">
+	</trim> -->
+	
+	<!-- 可以将一个 List 实例或者数组作为参数对象传给 MyBatis，当你这么做的时候，MyBatis 会自动将它包装在一个 Map 中并以名称为键。
+		List 实例将会以list作为键，而数组实例的键将是array。 -->
+	<select id="queryPost" resultType="post">
+	  SELECT * FROM T_POST AS p
+	  WHERE id IN
+	  <!-- 如果想用collection="ids" 则需要在接口参数里加@Param("ids") -->
+	  <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+	       #{item}
+	  </foreach>
+	</select>
+	
+	<!-- 批量保存时参数传list和实体名都可以 批量更新不能获取自增ID了  参数类型可以不指定 foreach中的list才是真正的参数类型-->
+	<!-- 当其中一条不成功时，测试也会回滚 -->
+	<insert id="insertTags"> <!-- parameterType="tag" -->
+		INSERT INTO T_TAG(name)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.name})
+	  	</foreach>
+	</insert>
+	
+	<select id="queryBlogBind" resultType="blog">
+		<bind name="pattern" value="'%' + _parameter + '%'" /><!-- 如果传入对象的话 _parameter.getTitle() -->
+		SELECT * FROM T_BLOG
+		WHERE title LIKE #{pattern}
+	</select>
+	
+	<!-- <insert id="insert">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			<if test="_databaseId == 'oracle'">
+				SELECT seq_users.nextval FROM dual
+			</if>
+			<if test="_databaseId == 'db2'">
+				SELECT nextval for seq_users FROM sysibm.sysdummy1
+			</if>
+		</selectKey>
+		INSERT INTO USERS VALUES (#{id}, #{name})
+	</insert> -->
+	
+</mapper>
