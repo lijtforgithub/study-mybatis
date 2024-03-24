@@ -72,10 +72,10 @@
   	
   	<!-- 类型别名是为 Java 类型设置一个短的名字。它只和 XML 配置有关，存在的意义仅在于用来减少类完全限定名的冗余。 -->
 	<typeAliases>
-  		<!-- <typeAlias alias="blog" type="com.ljt.entity.Blog" /> -->
+  		<!-- <typeAlias alias="blog" type="com.ljt.study.entity.Blog" /> -->
   		<!-- 每一个在包 domain.blog 中的 Java Bean，在没有注解的情况下，会使用 Bean 的首字母小写的非限定类名来作为它的别名。
-  			 比如com.ljt.entity.Blog的别名为 blog；若有注解，则别名为其注解值。 -->
-  		<package name="com.ljt.entity" />
+  			 比如com.ljt.study.entity.Blog的别名为 blog；若有注解，则别名为其注解值。 -->
+  		<package name="com.ljt.study.entity" />
   	</typeAliases>
   	
   	<typeHandlers>
@@ -88,13 +88,13 @@
     		在类型处理器的类上（TypeHandler class）增加一个 @MappedJdbcTypes 注解来指定与其关联的 JDBC 类型列表。 
     		如果在 jdbcType 属性中也同时指定，则注解方式将被忽略。
   		 -->
-	  	<!-- <typeHandler handler="com.ljt.mybatis.handler.StringTypeHandler" javaType="String" jdbcType="VARCHAR" /> -->
+	  	<!-- <typeHandler handler="com.ljt.study.mybatis.handler.StringTypeHandler" javaType="String" jdbcType="VARCHAR" /> -->
 	  	
 	  	<!-- 处理枚举类型 -->
 	  	<!-- <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="java.math.RoundingMode" /> -->
 	  	
 	  	<!-- 用自动检索（autodiscovery）功能的时候，只能通过注解方式来指定 JDBC 的类型。 -->
-	  	<!-- <package name="com.ljt.mybatis.handler" /> -->
+	  	<!-- <package name="com.ljt.study.mybatis.handler" /> -->
 	</typeHandlers>
 	
 	<!-- ObjectFactory 接口很简单，它包含两个创建用的方法，一个是处理默认构造方法的，另外一个是处理带参数的构造方法的。
@@ -151,10 +151,10 @@
     	<mapper resource="mapper/dynamic-mapper.xml" />
     	
     	<!-- 类名和包名  配合注解才能使用。XML配置方法不行 -->
-    	<!-- <mapper class="com.ljt.dao.BlogMapper" /> -->
-    	<!-- <package name="com.ljt.dao" /> -->
+    	<!-- <mapper class="com.ljt.study.dao.BlogMapper" /> -->
+    	<!-- <package name="com.ljt.study.dao" /> -->
     	
-    	<mapper class="com.ljt.dao.APIMapper"/>
+    	<mapper class="com.ljt.study.dao.APIMapper"/>
   	</mappers>
   	
 </configuration>

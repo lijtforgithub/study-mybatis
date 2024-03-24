@@ -1,10 +1,9 @@
 package com.ljt.study.mybatis.factory;
 
-import java.util.ResourceBundle;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
-
-import org.apache.commons.dbcp2.BasicDataSource;
+import java.util.ResourceBundle;
 
 /**
  * @author LiJingTang
@@ -14,7 +13,7 @@ public class DataSouceFactory {
 	
 	private static DataSource dataSource = getDataSource();
 	
-	private DataSouceFactory() {};
+	private DataSouceFactory() {}
 	
 	public static DataSource newDataSourceInstace () {
 		return dataSource;

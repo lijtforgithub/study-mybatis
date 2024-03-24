@@ -7,15 +7,19 @@ import com.ljt.study.spring.service.AuthorService;
 import com.ljt.study.spring.service.BlogService;
 import com.ljt.study.spring.service.PostService;
 import com.ljt.study.spring.service.UserService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * junit5 使用 @SpringJUnitConfig
  * @author LiJingTang
  * @version 2015年9月28日 下午9:44:40
  */
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:application.xml")
 public class MybatisSpringTest {
 	

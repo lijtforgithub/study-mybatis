@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ljt.spring.dao.PostDao">
+<mapper namespace="com.ljt.study.spring.dao.PostDao">
 
 	<select id="getById" resultType="post">
 		SELECT * FROM T_BLOG WHERE id = #{id}

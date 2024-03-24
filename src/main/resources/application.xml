@@ -30,7 +30,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations" value="classpath*:mapper/spring/**/*-mapper.xml" />
 		<!-- 配置别名 -->
-		<property name="typeAliasesPackage" value="com.ljt.entity" />
+		<property name="typeAliasesPackage" value="com.ljt.study.entity" />
 		<!-- 配置Mybatis插件 -->
 		<property name="plugins">
 			<array>
@@ -86,19 +86,19 @@
 		 因为代理创建在运行时环境中(Runtime,译者注) ,那么指定的映射器必须是一个接口,而 不是一个具体的实现类。  -->
 	<bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
 		<!-- 要注意,所指定的映射器类必须是一个接口,而不是具体的实现类。 -->
-	  	<property name="mapperInterface" value="com.ljt.spring.dao.UserDao" />
+	  	<property name="mapperInterface" value="com.ljt.study.spring.dao.UserDao" />
 	  	<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	
 	<!-- SqlSessionTemplate 实现了 SqlSession 接口,这个类负责管理 MyBatis 的 SqlSession, 调用 MyBatis 的 SQL 方法, 翻译异常。 
 		SqlSessionTemplate 是线程安全的, 可以被多个 DAO 所共享使用。  -->
-	<bean id="blogDao" class="com.ljt.spring.dao.impl.BlogDaoImpl">
+	<bean id="blogDao" class="com.ljt.study.spring.dao.impl.BlogDaoImpl">
 		<property name="sqlSession" ref="sqlSession" />
 	</bean>
 	
 	<!-- SqlSessionDaoSupport 需要一个 sqlSessionFactory 或 sqlSessionTemplate 属性来 设 置 。 
 		这 些 被 明 确 地 设 置 或 由 Spring 来 自 动 装 配 。 如 果 两 者 都 被 设 置 了 , 那 么 SqlSessionFactory 是被忽略的。 -->
-	<bean id="authorDao" class="com.ljt.spring.dao.impl.AuthorDaoImpl">
+	<bean id="authorDao" class="com.ljt.study.spring.dao.impl.AuthorDaoImpl">
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	

@@ -1,18 +1,17 @@
 package com.ljt.study.page.service;
 
-import java.util.List;
-
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ljt.study.entity.User;
+import com.ljt.study.spring.dao.UserDao;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.ljt.study.entity.User;
-import com.ljt.study.spring.dao.UserDao;
+import java.util.List;
 
 /**
  * @author LiJingTang
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService {
 	@SuppressWarnings("unused")
 	private List<User> queryUser(Page<User> page) {
 		try(SqlSession sqlSession = sqlSessionFactory.openSession(true)) {
-			return sqlSession.selectList("com.ljt.spring.dao.UserDao.query", null, new RowBounds(page.getPageNum(), page.getPageSize()));
+			return sqlSession.selectList("com.ljt.study.spring.dao.UserDao.query", null, new RowBounds(page.getPageNum(), page.getPageSize()));
 		}
 	}
 

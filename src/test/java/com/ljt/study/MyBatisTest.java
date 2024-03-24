@@ -6,7 +6,7 @@ import com.ljt.study.mybatis.MybatisUtils;
 import com.ljt.study.service.*;
 import com.ljt.study.service.impl.*;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.*;
 

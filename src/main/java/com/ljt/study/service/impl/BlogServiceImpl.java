@@ -30,7 +30,7 @@ public class BlogServiceImpl implements BlogService {
 		SqlSession sqlSession = this.sqlSessionFactory.openSession();
 		
 		try {
-			sqlSession.insert("com.ljt.dao.BlogMapper.insert", blog);
+			sqlSession.insert("com.ljt.study.dao.BlogMapper.insert", blog);
 			sqlSession.commit();
 			
 			return blog;

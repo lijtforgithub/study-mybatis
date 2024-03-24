@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ljt.dao.SeniorMapper">
+<mapper namespace="com.ljt.study.dao.SeniorMapper">
 
 	<!-- type 完全限定的Java类名，或一个类型别名（参加上面的列表中内置型的别名）。
 		autoMapping 如果设置，MyBatis会启用或禁用自动映射这个结果映射。此属性将覆盖config中的全局配置参数 autoMappingBehavior。默认值：未设置。 -->
